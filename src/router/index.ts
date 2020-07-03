@@ -1,22 +1,35 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import Home from '../views/Home.vue';
+import store from '../store';
+import MainPage from '../pages/MainPage.vue';
+import TodoPreview from '../pages/TodoPreview.vue';
 
 Vue.use(VueRouter);
+
+function checkValidPreviewRoute(queryId: string) {
+  return (
+    store.state.notesList.find((note) => note.id === queryId)
+    || store.state.currentCreatingNote.id === queryId
+  );
+}
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'MainPage',
+    component: MainPage,
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    path: '/preview',
+    name: 'TodoPreview',
+    component: TodoPreview,
+    props: (route) => ({ noteId: route.query.id }),
+    beforeEnter(toR, fromR, next) {
+      // validate route
+      const queryId = toR.query?.id;
+      if (!queryId || !checkValidPreviewRoute(queryId.toString())) next('/');
+      else next();
+    },
   },
 ];
 

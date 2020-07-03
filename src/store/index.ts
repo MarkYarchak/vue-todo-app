@@ -1,15 +1,57 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-  },
-  mutations: {
+    currentCreatingNote: {
+      id: '',
+    },
+    notesList: [
+      {
+        id: 'aowenoi',
+        title: 'Buy products',
+        tasks: [
+          {},
+        ],
+      },
+      {
+        id: 'aowenoi',
+        title: 'Buy products',
+        tasks: [
+          {},
+        ],
+      },
+      {
+        id: 'aowenoi',
+        title: 'Buy products',
+        tasks: [
+          {},
+        ],
+      },
+      {
+        id: 'aowenoi',
+        title: 'Buy products',
+        tasks: [
+          {},
+        ],
+      },
+    ],
   },
   actions: {
+    setCurrentCreateId(context, payload) {
+      context.commit('setNoteCreateId', payload);
+    },
   },
-  modules: {
+  mutations: {
+    setNoteCreateId(state, id) {
+      state.currentCreatingNote.id = id;
+    },
   },
+  getters: {
+    notesList: (store) => store.notesList,
+  },
+  plugins: [createPersistedState()],
 });
