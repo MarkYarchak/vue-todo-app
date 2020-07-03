@@ -35,6 +35,12 @@
 <script>
 export default {
   name: 'DeleteModal',
+  props: {
+    noteId: {
+      type: String,
+      default: '',
+    },
+  },
 };
 </script>
 

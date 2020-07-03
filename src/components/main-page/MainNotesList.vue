@@ -9,11 +9,13 @@
         v-for="(note, index) in notesList"
         :key="index"
         :note="note"
+        @delete-note="deleteNoteHandler"
       />
     </div>
     <DeleteModal
-      v-if="deleteModal"
-      @close="deleteModal = false"
+      v-if="deleteModal.active"
+      :note-id="deleteModal.noteId"
+      @close="deleteModal.active = false"
     />
   </div>
 </template>
@@ -31,13 +33,22 @@ export default {
   },
   data() {
     return {
-      deleteModal: false,
+      deleteModal: {
+        noteId: '',
+        active: false,
+      },
     };
   },
   computed: {
     ...mapGetters([
       'notesList',
     ]),
+  },
+  methods: {
+    deleteNoteHandler(noteId) {
+      console.log(noteId);
+      this.deleteModal.active = true;
+    },
   },
 };
 </script>

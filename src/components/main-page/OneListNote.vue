@@ -4,8 +4,19 @@
       class="note-card card-shadows cursor-pointer border-radius-6"
       @click="clickListNoteHandler(note.id)"
     >
-      <div class="list-item__title">
-        {{ note.title }}
+      <div
+        v-if="!idEmptyNote"
+        class="d-flex"
+      >
+        <div class="list-item__title">
+          {{ note.title }}
+        </div>
+        <div
+          class="delete-icon-wrapper d-flex justify-center"
+          @click.stop="$emit('delete-note', note.id)"
+        >
+          <div class="delete-icon" />
+        </div>
       </div>
       <div
         v-if="!idEmptyNote"
@@ -91,6 +102,21 @@ export default {
     &__title {
       font-weight bold;
       font-size: 18px
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      /*max-width 100%*/
+      flex-grow: 1
+    }
+  }
+
+  .delete-icon {
+    width: 20px
+    height: 20px
+    background: center/cover no-repeat url('../../assets/icons/trash-alt-solid.svg');
+    &-wrapper {
+      width: min-content;
+      padding: 0 10px
     }
   }
 
@@ -136,14 +162,12 @@ export default {
     min-width: 64px;
     vertical-align: middle;
     text-align: center;
-    text-overflow: ellipsis;
     text-transform: uppercase;
     color: gray;
     background-color: transparent;
     font-family: "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system;
     font-size: 14px;
     font-weight: 500;
-    overflow: hidden;
     outline: none;
     cursor: pointer;
   }
@@ -152,32 +176,4 @@ export default {
     border: none;
   }
 
-  /* Overlay */
-  .awesome-text-button::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: currentColor;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  /* Ripple */
-  .awesome-text-button::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    border-radius: 50%;
-    padding: 50%;
-    width: 32px;
-    height: 32px;
-    background-color: currentColor;
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1) ;
-    transition: opacity 1s, transform 0.5s;
-  }
 </style>

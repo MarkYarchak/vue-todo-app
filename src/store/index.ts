@@ -12,7 +12,7 @@ export default new Vuex.Store({
     notesList: [
       {
         id: 'aowenoi',
-        title: 'Buy products',
+        title: 'Buy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy productsBuy products',
         tasks: [
           {},
         ],
