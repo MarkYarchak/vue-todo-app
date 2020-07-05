@@ -42,6 +42,10 @@ module.exports = {
     //     json: 'never',
     //   },
     // ],
+    // 'arrow-paren': [
+    //   'error',
+    //   'consistent',
+    // ],
     'function-paren-newline': [
       'error',
       'consistent',

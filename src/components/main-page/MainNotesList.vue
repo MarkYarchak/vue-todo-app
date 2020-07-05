@@ -12,7 +12,7 @@
         @delete-note="deleteNoteHandler"
       />
     </div>
-    <DeleteModal
+    <DeleteNoteModal
       v-if="deleteModal.active"
       :note-id="deleteModal.noteId"
       @close="deleteModal.active = false"
@@ -23,12 +23,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import OneListNote from '@/components/main-page/OneListNote.vue';
-import DeleteModal from '@/components/main-page/DeleteModal.vue';
+import DeleteNoteModal from '@/components/DeleteNoteModal.vue';
 
 export default {
   name: 'MainTodoList',
   components: {
-    DeleteModal,
+    DeleteNoteModal,
     OneListNote,
   },
   data() {
@@ -46,8 +46,10 @@ export default {
   },
   methods: {
     deleteNoteHandler(noteId) {
-      console.log(noteId);
-      this.deleteModal.active = true;
+      this.deleteModal = {
+        noteId,
+        active: true,
+      };
     },
   },
 };

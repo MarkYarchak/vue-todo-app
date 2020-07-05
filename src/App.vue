@@ -5,12 +5,27 @@
 </template>
 
 <style lang="stylus">
+/* Global app styles (without scoped vue-attribute) */
 #app
   font-family Avenir, Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   max-width 100%
   flex 1 0 0
+
+.no-user-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scrollable-y {
+  overflow-y auto
+}
 
 .container {
   width: 100%
@@ -67,5 +82,23 @@
 
 .border-radius-6 {
   border-radius: 6px
+}
+
+.btn {
+  box-shadow 0 1px 2px 1px #bbbbbb
+  &:active {
+    outline none
+    box-shadow 0 0 1px 1px #bbbbbb
+    border-color white!important
+  }
+  &:focus {
+    outline none
+  }
+}
+
+@media (max-width: 600px) {
+  .hidden-xs {
+    display: none
+  }
 }
 </style>

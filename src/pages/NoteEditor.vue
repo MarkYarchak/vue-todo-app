@@ -1,12 +1,12 @@
 <template>
   <div>
     <InfoNavBar
-      title="Note preview"
+      title="Note editor"
       :can-back="true"
     />
     <div class="todo-preview-content d-flex justify-center full-width">
       <div class="form-card-wrapper">
-        <NoteFormCard />
+        <NoteEditorFormCard />
       </div>
     </div>
   </div>
@@ -14,12 +14,12 @@
 
 <script>
 import InfoNavBar from '@/components/InfoNavBar.vue';
-import NoteFormCard from '@/components/preview/NoteFormCard.vue';
+import NoteEditorFormCard from '@/components/note-editor-card/NoteEditorFormCard.vue';
 
 export default {
-  name: 'TodoPreview',
+  name: 'NoteEditor',
   components: {
-    NoteFormCard,
+    NoteEditorFormCard,
     InfoNavBar,
   },
   props: {

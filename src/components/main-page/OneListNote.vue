@@ -1,8 +1,11 @@
 <template>
   <div class="list-item full-width">
     <div
-      class="note-card card-shadows cursor-pointer border-radius-6"
-      @click="clickListNoteHandler(note.id)"
+      tabindex="0"
+      class="note-card card-shadows no-user-select cursor-pointer border-radius-6"
+      @click="openOneNote(note.id)"
+      @keypress.space="openOneNote(note.id)"
+      @keypress.enter="openOneNote(note.id)"
     >
       <div
         v-if="!idEmptyNote"
@@ -12,10 +15,16 @@
           {{ note.title }}
         </div>
         <div
+          tabindex="0"
           class="delete-icon-wrapper d-flex justify-center"
           @click.stop="$emit('delete-note', note.id)"
+          @keypress.space="$emit('delete-note', note.id)"
+          @keypress.enter="$emit('delete-note', note.id)"
         >
-          <div class="delete-icon" />
+          <font-awesome-icon
+            :icon="['fas', 'trash']"
+            style="padding: 4px; color: red; font-size: 20px;"
+          />
         </div>
       </div>
       <div
@@ -30,23 +39,19 @@
               v-if="tIndex < 3"
               :key="tIndex"
             >
-              {{ todo.title }}
+              <div class="short-todo-view">
+                {{ todo.title }}
+              </div>
             </li>
           </template>
         </ul>
       </div>
       <div
-        v-if="!idEmptyNote"
-        class="full-width awesome-text-button"
-      >
-        <span>Tap to edit</span>
-      </div>
-      <div
         v-else
         class="d-flex justify-center align-center full-width create-new-note"
       >
-        <div style="width: 40px;">
-          <div class="create-new-icon" />
+        <div style="margin-right: 15px;">
+          <font-awesome-icon :icon="['fas', 'plus']" />
         </div>
         <span>Create new</span>
       </div>
@@ -72,17 +77,11 @@ export default {
     },
   },
   methods: {
-    clickListNoteHandler(taskId) {
-      let id = taskId;
-      // if Note without id - generate new
-      if (!id) {
-        id = v4();
-        // set new generated id to store for better security
-        this.$store.dispatch('setCurrentCreateId', id);
-      }
-      // go to the Note preview page with received/generated id
+    openOneNote(taskId) {
+      const id = taskId || this.createNewNote();
+      // go to the Note editor page with received/generated id
       this.$router.push({
-        path: '/preview',
+        path: '/edit',
         query: {
           id,
         },
@@ -90,6 +89,10 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    createNewNote(id = v4()/* generate id for new Note */) {
+      this.$store.dispatch('setCurrentEditableNote', { id });
+      return id;
     },
   },
 };
@@ -102,22 +105,29 @@ export default {
     &__title {
       font-weight bold;
       font-size: 18px
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      /*max-width 100%*/
       flex-grow: 1
     }
   }
 
-  .delete-icon {
-    width: 20px
-    height: 20px
-    background: center/cover no-repeat url('../../assets/icons/trash-alt-solid.svg');
-    &-wrapper {
-      width: min-content;
-      padding: 0 10px
+  .delete-icon-wrapper {
+    width: 20px;
+    height min-content
+    padding: 2px 10px
+    &:hover {
+      transition 0.3s
+      background-color: rgba(238, 17, 17, 0.1)
+      border-radius: 4px
     }
+    &:not(:hover) {
+      transition 0.3s
+    }
+  }
+
+  .short-todo-view {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 20px
   }
 
   .note-card {
@@ -143,37 +153,7 @@ export default {
   .create-new-note {
     font-size: 22px
     font-weight bold
-    padding: 10px
-  }
-
-  .create-new-icon {
-    width 20px
-    height: 20px
-    background: center/cover no-repeat url('../../assets/icons/plus-solid.svg');
-  }
-
-  .awesome-text-button {
-    position: relative;
-    display: inline-block;
-    box-sizing: border-box;
-    border: none;
-    border-radius: 4px;
-    padding: 0 8px;
-    min-width: 64px;
-    vertical-align: middle;
-    text-align: center;
-    text-transform: uppercase;
-    color: gray;
-    background-color: transparent;
-    font-family: "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system;
-    font-size: 14px;
-    font-weight: 500;
-    outline: none;
-    cursor: pointer;
-  }
-
-  .awesome-text-button::-moz-focus-inner {
-    border: none;
+    padding: 10px 0
   }
 
 </style>
