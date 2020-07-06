@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { Note } from '@/models/note';
-// import createPersistedState from 'vuex-persistedstate';
+import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
 
@@ -55,5 +55,5 @@ export default new Vuex.Store({
   getters: {
     notesList: (store) => store.notesList,
   },
-  // plugins: [createPersistedState()],
+  plugins: [createPersistedState()],
 });

@@ -1,10 +1,7 @@
 <template>
   <div>
     <div>
-      <div
-        class="note-title d-flex"
-        style="padding: 15px 15px 0 0;"
-      >
+      <div class="note-title d-flex">
         <span>Note title:</span>
         <div style="flex-grow: 1;" />
 
@@ -129,14 +126,15 @@ export default {
     font-weight bold
     text-align: center
     border 1px solid transparent
-    padding: 5px 0 10px
+    /*padding: 5px 0 10px*/
+    padding: 16px 12px 0 12px;
     span {
       align-self center
     }
     &__content {
-      font-size: 18px
+      font-size: 20px
       font-weight normal
-      padding: 10px 0
+      padding: 10px 16px
     }
   }
 
@@ -144,13 +142,13 @@ export default {
   .edit-title-input {
     flex-grow: 1
     padding: 4px 7px
-    font-size: 18px
+    font-size: 20px
     border none
     &:focus {
       outline none
     }
     &-wrapper {
-      border 2px solid #42A5F5
+      border 2px solid #0e6cb9
       padding: 2px
       border-radius: 10px
       box-shadow 0 1px 2px 1px #bbbbbb

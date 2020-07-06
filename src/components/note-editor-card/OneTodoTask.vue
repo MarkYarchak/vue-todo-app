@@ -66,7 +66,7 @@ export default {
       console.log(this.todo.completed);
       this.$emit('switch-check', {
         id: this.todo.id,
-        completed: this.todo.completed,
+        completed: !this.todo.completed,
       });
     },
   },

@@ -8,7 +8,7 @@
       @keypress.enter="openOneNote(note.id)"
     >
       <div
-        v-if="!idEmptyNote"
+        v-if="!isEmptyNote"
         class="d-flex"
       >
         <div class="list-item__title">
@@ -28,19 +28,32 @@
         </div>
       </div>
       <div
-        v-if="!idEmptyNote"
-        class="note-last-tasks"
+        v-if="!isEmptyNote"
+        class="note-tasks-preview"
       >
-        <ul style="margin: 10px 0;">
+        <ul
+          v-if="note.tasks.length"
+          style="margin: 5px 0;"
+        >
           <template
             v-for="(todo, tIndex) in note.tasks"
           >
             <li
-              v-if="tIndex < 3"
+              v-if="tIndex < 4"
               :key="tIndex"
             >
-              <div class="short-todo-view">
+              <div
+                v-if="tIndex < 3"
+                class="short-todo-view"
+              >
                 {{ todo.title }}
+              </div>
+              <div
+                v-else-if="(note.tasks.length - 3) > 0"
+                class="short-todo-view"
+                style="color: #505050"
+              >
+                and {{ note.tasks.length - 3 }} more...
               </div>
             </li>
           </template>
@@ -71,7 +84,7 @@ export default {
     },
   },
   computed: {
-    idEmptyNote() {
+    isEmptyNote() {
       // check if the note object is empty
       return Object.keys(this.note).length === 0 && this.note.constructor === Object;
     },
@@ -130,10 +143,12 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-right: 20px
+    font-size: 16px
+    line-height 20px
   }
 
   .note-card {
-    padding: 10px
+    padding: 12px 10px
     border 1px solid black
   }
 
@@ -148,7 +163,7 @@ export default {
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   }
 
-  .note-last-tasks {
+  .note-tasks-preview {
     //
   }
 

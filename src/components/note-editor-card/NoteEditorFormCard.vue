@@ -57,7 +57,7 @@
     <SubmitModal
       v-if="editTodoTask.activeDialog"
       @submit-action="updateTodoItem"
-      @close="editTodoTask.activeDialog = false"
+      @close="closeUpdateTodoDialog"
     >
       <template v-slot:header>Create new task TODO</template>
       <template v-slot:modal-body>
@@ -126,6 +126,9 @@ export default {
     },
   },
   methods: {
+    closeUpdateTodoDialog() {
+      this.editTodoTask.activeDialog = false;
+    },
     addNewTodoHandler() {
       this.editTodoTask.activeDialog = true;
       this.$nextTick(() => {

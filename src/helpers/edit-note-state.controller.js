@@ -34,7 +34,7 @@ export default {
       // determine current editable state from states list
       return JSON.parse(
         this.editorController.editStates[this.editorController.editIndex]
-        || JSON.stringify({ title: '' }),
+        || JSON.stringify({ title: '', tasks: [] }),
       );
     },
 
