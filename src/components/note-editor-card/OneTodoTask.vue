@@ -6,6 +6,7 @@
         v-model="isChecked"
         type="checkbox"
         class="todo-checkbox no-user-select"
+        @change="onTodoToggle"
       >
       <div style="padding: 2px 10px;">
         <label
@@ -13,13 +14,6 @@
           :style="isChecked ? 'text-decoration: line-through' : ''"
         >
           {{ todo.title }}
-          <!--{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}
-          {{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}{{ todo.title }}-->
         </label>
       </div>
     </div>
@@ -28,6 +22,7 @@
       v-for="(action, index) in todoActions"
       :key="index"
       :class="`btn action-btn ${action.className}`"
+      @click="action.execute"
     >
       <font-awesome-icon :icon="action.icon" />
       <span class="hidden-xs ml-1"> {{ action.title }}</span>
@@ -50,20 +45,38 @@ export default {
   },
   data() {
     return {
-      isChecked: false,
-      todoActions: [
+      isChecked: this.todo.completed,
+    };
+  },
+  computed: {
+    todoActions() {
+      return [
         {
           title: 'edit',
           icon: ['fas', 'edit'],
           className: 'edit-btn',
+          execute: () => {
+            this.$emit('edit', this.todo.id);
+          },
         },
         {
           title: 'delete',
           icon: ['fas', 'trash-alt'],
           className: 'delete-btn',
+          execute: () => {
+            this.$emit('delete', this.todo.id);
+          },
         },
-      ],
-    };
+      ];
+    },
+  },
+  methods: {
+    onTodoToggle() {
+      this.$emit('switch-check', {
+        id: this.todo.id,
+        completed: this.isChecked,
+      });
+    },
   },
 };
 </script>
@@ -74,10 +87,9 @@ export default {
   }
 
   .one-todo {
-    padding: 6px
+    padding: 10px 6px
     margin: 2px 0 5px
     border-bottom 1px solid grey
-    /*border-radius: 3px*/
     &__checkbox-with-label {
       font-size: 18px
       display: flex

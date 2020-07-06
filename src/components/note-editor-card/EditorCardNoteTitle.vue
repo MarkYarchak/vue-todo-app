@@ -11,7 +11,7 @@
         <!-- Switcher to edit title  -->
         <button
           class="btn edit-title-btn"
-          @click="allowTitleEditing"
+          @click="switchTitleEditing"
         >
           <font-awesome-icon
             :icon="['fas', 'pen']"
@@ -26,7 +26,7 @@
         id="editable-title"
         class="note-title__content"
       >
-        {{ note.title || 'untitled' }}
+        {{ title || 'untitled' }}
       </div>
     </div>
 
@@ -45,7 +45,10 @@
 
         <!-- Save input data button -->
         <div class="save-input-wrapper">
-          <button class="save-input-btn">
+          <button
+            class="save-input-btn"
+            @click="updateNoteTitle"
+          >
             <font-awesome-icon
               :icon="['fas', 'save']"
               style="font-size: 22px;"
@@ -61,9 +64,11 @@
 export default {
   name: 'EditorCardNoteTitle',
   props: {
-    note: {
-      type: Object,
-      default: () => ({}),
+    title: {
+      type: String,
+      default: () => ({
+        title: '',
+      }),
     },
   },
   data() {
@@ -76,17 +81,23 @@ export default {
     };
   },
   methods: {
-    allowTitleEditing() {
+    switchTitleEditing() {
       const active = !this.editNoteTitle.active;
       this.editNoteTitle = {
         active,
-        value: this.note.title,
+        value: this.title,
       };
       if (active) {
         // update after open title editing container and then focus to input
         this.$nextTick(() => {
           document.getElementById('edit-title-input-field').focus();
         });
+      }
+    },
+    updateNoteTitle() {
+      if (this.editNoteTitle.value !== this.title) {
+        this.$emit('update-title', this.editNoteTitle.value);
+        this.editNoteTitle.active = false;
       }
     },
   },

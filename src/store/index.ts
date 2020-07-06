@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { Note } from '@/models/note';
 // import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
@@ -11,36 +12,7 @@ export default new Vuex.Store({
       title: '',
       tasks: [],
     },
-    notesList: [
-      {
-        id: 'aowenoi2',
-        title: 'Buy productsBuy productsBuy productsBuy productsBuy productsBuy products',
-        tasks: [
-          {},
-        ],
-      },
-      {
-        id: 'aowenowie12d',
-        title: 'Buy products 2',
-        tasks: [
-          {},
-        ],
-      },
-      {
-        id: 'aowenoi2wef',
-        title: 'Buy products 3',
-        tasks: [
-          {},
-        ],
-      },
-      {
-        id: 'aoweno3i1',
-        title: 'Buy products 4',
-        tasks: [
-          {},
-        ],
-      },
-    ],
+    notesList: [],
   },
   actions: {
     setCurrentEditableNote(context, { id }) {
@@ -49,21 +21,26 @@ export default new Vuex.Store({
     deleteNote(context, payload) {
       context.commit('deleteNoteById', payload);
     },
+    createNewNote(context, payload: Note) {
+      context.commit('addOneNote', payload);
+    },
+    updateAvailableNote(context, payload: Note) {
+      context.commit('updateOneNote', payload);
+    },
   },
   mutations: {
     setEditableNote(state, id) {
       state.newlyCreatedNote.id = id;
     },
-    updateEditableNote(state, note) {
-      if (state.newlyCreatedNote.id === note.id) {
-        state.newlyCreatedNote = note;
-      } else {
-        const noteIndex = state.notesList.findIndex((n) => n.id === note.id);
-        state.notesList[noteIndex] = note;
-      }
+    updateOneNote(state, note: Note) {
+      const noteIndex = state.notesList.findIndex((n) => n.id === note.id);
+      // @ts-ignore
+      state.notesList[noteIndex] = note;
     },
-    createNewNote(state, note) {
+    addOneNote(state, note: Note) {
+      // @ts-ignore
       state.notesList.unshift(note);
+      state.newlyCreatedNote.id = '';
     },
     deleteNoteById(state, id) {
       if (state.newlyCreatedNote.id === id) {

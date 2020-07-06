@@ -31,7 +31,7 @@
         v-if="!idEmptyNote"
         class="note-last-tasks"
       >
-        <ul>
+        <ul style="margin: 10px 0;">
           <template
             v-for="(todo, tIndex) in note.tasks"
           >
@@ -103,8 +103,10 @@ export default {
     max-width 800px
     margin-bottom: 10px
     &__title {
+      align-self center
       font-weight bold;
       font-size: 18px
+      padding: 2px 5px
       flex-grow: 1
     }
   }

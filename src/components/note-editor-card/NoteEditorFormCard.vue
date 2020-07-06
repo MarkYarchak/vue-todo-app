@@ -2,13 +2,21 @@
   <div class="form-card full-width">
     <!-- Component with actions to save note, delete note and discard changes -->
     <ActionsTopBar
+      :editor-controller="editorController"
+      :allow-undo="allowUndo"
+      :allow-redo="allowRedo"
+      :undo-edit="undoEdit"
+      :redo-edit="redoEdit"
+      :create-mode-note="createModeNote"
       @save-note="saveNoteProxy"
       @delete-note="deleteNoteDialogHandler"
+      @discard-changes="discardChangesDialog = true"
     />
 
     <!-- Component for visualizing or editing note title -->
     <EditorCardNoteTitle
-      :note="availableExistingNote"
+      :title="currentEditState.title"
+      @update-title="updateNoteTitle"
     />
     <div style="border-bottom: 1px solid black; margin: 2px 0;" />
     <div class="d-flex align-center">
@@ -18,7 +26,7 @@
       <!-- Create new TODO button-->
       <button
         class="d-flex align-center add-todo-btn"
-        @click="openCreateTodoDialog"
+        @click="addNewTodoHandler"
       >
         <font-awesome-icon :icon="['fas', 'plus']" />
         <span style="margin-left: 10px; font-weight: bold;">ADD</span>
@@ -28,36 +36,48 @@
         class="hidden-xs"
       />
     </div>
+
     <div>
       <OneTodoTask
-        v-for="(todo, todoI) in noteTodos"
+        v-for="(todo, todoI) in editNoteInstance.tasks"
         :key="todoI"
         :todo="todo"
         :todo-index="todoI"
+        @switch-check="todoSwitchCheck"
+        @edit="openEditTodoDialog"
+        @delete="deleteTodoItem"
       />
     </div>
+
+    <SubmitModal
+      v-if="discardChangesDialog"
+      submit-bg-color="orange"
+      @submit-action="submitDiscardChangesDialog"
+      @close="discardChangesDialog = false"
+    />
+    <SubmitModal
+      v-if="editTodoTask.activeDialog"
+      @submit-action="updateTodoItem"
+      @close="editTodoTask.activeDialog = false"
+    >
+      <template v-slot:header>Create new task TODO</template>
+      <template v-slot:modal-body>
+        <div style="padding: 20px 0;">
+          <input
+            id="submit-todo-modal-input"
+            v-model="editTodoTask.inputHandler"
+            type="text"
+            class="create-todo-input"
+          >
+        </div>
+      </template>
+    </SubmitModal>
     <DeleteNoteModal
       v-if="deleteNoteDialog.active"
       :note-id="deleteNoteDialog.noteId"
       @close="deleteNoteDialog.active = false"
       @deleted="onNoteDeleted"
     />
-    <!--    <div class="fab btn-undo">-->
-    <!--      <div class="icon-btn">-->
-    <!--        <font-awesome-icon-->
-    <!--          :icon="['fas', 'undo-alt']"-->
-    <!--          style="font-size: 20px;"-->
-    <!--        />-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <!--    <div class="fab btn-redo">-->
-    <!--      <div class="icon-btn">-->
-    <!--        <font-awesome-icon-->
-    <!--          :icon="['fas', 'redo-alt']"-->
-    <!--          style="font-size: 20px;"-->
-    <!--        />-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -67,6 +87,7 @@ import ActionsTopBar from './ActionsTopBar.vue';
 import EditorCardNoteTitle from './EditorCardNoteTitle.vue';
 import editNoteStateController from '../../helpers/edit-note-state.controller';
 import DeleteNoteModal from '../DeleteNoteModal.vue';
+import SubmitModal from './SubmitModal.vue';
 
 export default {
   name: 'NoteEditorFormCard',
@@ -75,10 +96,17 @@ export default {
     EditorCardNoteTitle,
     ActionsTopBar,
     OneTodoTask,
+    SubmitModal,
   },
   mixins: [editNoteStateController],
   data() {
     return {
+      editTodoTask: {
+        id: '',
+        inputHandler: '',
+        activeDialog: '',
+      },
+      discardChangesDialog: false,
       editableNoteId: this.$route.query.id,
       deleteNoteDialog: {
         active: false,
@@ -87,36 +115,36 @@ export default {
     };
   },
   computed: {
+    // all notes list from global store
     notesList() {
       return this.$store.state.notesList;
     },
-    noteTodos() {
-      return [
-        {
-          title: 'Do something',
-        },
-        {
-          title: 'Do awesome',
-        },
-        {
-          title: 'Do nothing',
-        },
-      ];
+    createModeNote() {
+      return this.$store.state.newlyCreatedNote;
     },
     availableExistingNote() {
       return this.notesList.find((n) => n.id === this.editableNoteId);
     },
-    editableNote: {
-      get() {
-        return this.availableExistingNote ? this.$store.state.currentCreatingNote
-          : this.$store.state.notesList;
-      },
-      set({ id }) {
-        this.$store.state.dispatch('', id);
-      },
-    },
   },
   methods: {
+    addNewTodoHandler() {
+      this.editTodoTask.activeDialog = true;
+      this.$nextTick(() => {
+        document.getElementById('submit-todo-modal-input').focus();
+      });
+    },
+    openEditTodoDialog(id) {
+      const task = this.editNoteInstance.tasks.find((t) => t.id === id);
+
+      this.editTodoTask = {
+        id: task.id,
+        inputHandler: task.title,
+        activeDialog: true,
+      };
+      this.$nextTick(() => {
+        document.getElementById('submit-todo-modal-input').focus();
+      });
+    },
     deleteNoteDialogHandler() {
       this.deleteNoteDialog = {
         active: true,
@@ -126,21 +154,6 @@ export default {
     onNoteDeleted() {
       this.$router.push('/');
     },
-    openCreateTodoDialog() {},
-    saveNoteProxy() {
-      const id = this.editableNoteId;
-      const note = '';
-      if (note) this.updateExistingNote(note.id);
-      else this.storeNewNote(id);
-    },
-    updateExistingNote(noteId) {
-      console.log(noteId);
-    },
-    storeNewNote(id) {
-      console.log(id);
-
-      // clear create note form in store
-    },
   },
 };
 </script>
@@ -148,13 +161,9 @@ export default {
 <style lang="stylus" scoped>
   .form-card {
     max-width 900px
-    /*max-height calc(100vh - 100px)
-    height calc(100vh - 100px)*/
     padding: 8px
     border-radius: 8px
-    /*border 1px solid black*/
     flex-grow: 1
-    /* 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)*/
     box-shadow: 0 3px 9px 1px rgba(0,0,0,.3),0 5px 10px 0 rgba(0,0,0,.06);
   }
 
@@ -179,32 +188,11 @@ export default {
     }
   }
 
-  .fab {
-    position fixed
+  .create-todo-input {
+    flex-grow: 1
+    min-width: 280px
+    padding: 4px 7px
+    font-size: 15px
   }
 
-  .icon-btn {
-    border-radius: 50%
-    padding: 15px
-    color white
-    background-color: #039BE5
-    border: 1px solid #039BE5
-    box-shadow 0 0 2px 2px rgba(128, 128, 128, 0.42)
-    transition 0.2s
-  }
-
-  .icon-btn:active {
-    box-shadow none
-    border: none
-  }
-
-  .btn-undo {
-    right: 80px
-    bottom: 14px
-  }
-
-  .btn-redo {
-    right: 16px
-    bottom: 14px
-  }
 </style>

@@ -6,6 +6,9 @@
 
 <style lang="stylus">
 /* Global app styles (without scoped vue-attribute) */
+
+@import "./assets/styles/modal.css";
+
 #app
   font-family Avenir, Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased

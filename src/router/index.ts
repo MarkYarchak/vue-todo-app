@@ -7,6 +7,8 @@ import NoteEditor from '../pages/NoteEditor.vue';
 Vue.use(VueRouter);
 
 function checkValidEditNoteRoute(queryId: string) {
+  // find note in store else - invalid route
+  // search in existing notes list and in newly created note
   return (
     store.state.notesList.find((note) => note.id === queryId)
     || store.state.newlyCreatedNote.id === queryId
