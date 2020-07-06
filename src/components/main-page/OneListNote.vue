@@ -45,6 +45,7 @@
               <div
                 v-if="tIndex < 3"
                 class="short-todo-view"
+                :style="todo.completed ? 'text-decoration: line-through' : ''"
               >
                 {{ todo.title }}
               </div>
