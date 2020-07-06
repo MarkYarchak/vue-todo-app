@@ -27,6 +27,8 @@ const routes: Array<RouteConfig> = [
     component: NoteEditor,
     props: (route) => ({ noteId: route.query.id }),
     beforeEnter(toR, fromR, next) {
+      // clear cached tasks
+      store.state.newlyCreatedNote.tasks = [];
       // validate route
       const queryId = toR.query?.id;
       if (!queryId || !checkValidEditNoteRoute(queryId.toString())) next('/');

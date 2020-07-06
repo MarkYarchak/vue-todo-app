@@ -39,10 +39,9 @@
 
     <div>
       <OneTodoTask
-        v-for="(todo, todoI) in editNoteInstance.tasks"
+        v-for="(todo, todoI) in currentEditState.tasks"
         :key="todoI"
         :todo="todo"
-        :todo-index="todoI"
         @switch-check="todoSwitchCheck"
         @edit="openEditTodoDialog"
         @delete="deleteTodoItem"

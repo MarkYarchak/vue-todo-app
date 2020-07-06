@@ -32,10 +32,10 @@ export default {
 
     currentEditState() {
       // determine current editable state from states list
-      console.log(this.editorController.editStates);
-      console.log(this.editorController.editIndex);
-      const data = this.editorController.editStates[this.editorController.editIndex];
-      return JSON.parse(data || JSON.stringify({ title: '' }));
+      return JSON.parse(
+        this.editorController.editStates[this.editorController.editIndex]
+        || JSON.stringify({ title: '' }),
+      );
     },
 
     // allow undo operation for browser user
@@ -69,11 +69,11 @@ export default {
     },
 
     // trigger on manual changes and state update after undo operation (for disable redo)
-    clearInstancesAfterIndex() {
+    clearUnusedInstances() {
       const index = this.editorController.editIndex;
-      if (this.editorController.maxEditIndex > index) {
+      if (this.editorController.maxEditIndex >= index) {
         const len = this.editorController.editStates.length;
-        this.editorController.editStates.splice(index, len);
+        this.editorController.editStates.splice(index + 1, len);
       }
     },
 
@@ -89,10 +89,25 @@ export default {
 
     // save new edit note instance from data() by link in constructor
     addNewInstance() {
-      this.clearInstancesAfterIndex();
-      this.editorController.editStates.push(JSON.stringify(this.editorController.noteInstance));
-      this.editorController.editIndex += 1;
-      this.editorController.maxEditIndex = this.editorController.editIndex;
+      this.clearUnusedInstances();
+      this.$nextTick(() => {
+        // break object link system
+        const objInstance = {
+          ...this.editNoteInstance,
+          toJSON() {
+            return {
+              id: this.id,
+              title: this.title,
+              tasks: this.tasks,
+            };
+          },
+        };
+        // finally create unique object without link
+        const newObj = Object.create(objInstance);
+        this.editorController.editStates.push(JSON.stringify(newObj));
+        this.editorController.editIndex += 1;
+        this.editorController.maxEditIndex = this.editorController.editIndex;
+      });
     },
 
     // update temporary title
@@ -102,18 +117,31 @@ export default {
     },
 
     updateTodoItem() {
+      if (!this.editTodoTask.inputHandler) return;
       // check if given id
       const taskId = this.editTodoTask.id;
+
+      // create unique object for break link
+      const taskObjectInstance = {
+        ...this.editTodoTask,
+        toJSON() {
+          return {
+            title: this.inputHandler,
+            completed: this.completed,
+          };
+        },
+      };
+      const task = Object.create(taskObjectInstance);
 
       if (taskId) {
         // update one task todo
         const index = this.editNoteInstance.tasks.findIndex((t) => t.id === taskId);
-        this.editNoteInstance.tasks[index].title = this.editTodoTask.inputHandler;
+        this.editNoteInstance.tasks[index].title = task.inputHandler;
       } else {
         // else create new and push to temporary store
-        this.editNoteInstance.tasks.push({
+        this.editNoteInstance.tasks.unshift({
           id: v4(),
-          title: this.editTodoTask.inputHandler,
+          title: task.inputHandler,
           completed: false,
         });
       }

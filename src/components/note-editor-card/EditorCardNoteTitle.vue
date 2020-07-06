@@ -65,10 +65,8 @@ export default {
   name: 'EditorCardNoteTitle',
   props: {
     title: {
-      type: String,
-      default: () => ({
-        title: '',
-      }),
+      type: [String, Object],
+      default: '',
     },
   },
   data() {

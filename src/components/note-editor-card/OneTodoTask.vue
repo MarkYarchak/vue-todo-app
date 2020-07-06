@@ -2,16 +2,16 @@
   <div class="d-flex one-todo">
     <div class="one-todo__checkbox-with-label">
       <input
-        :id="`todo-checkbox-${todoIndex}`"
-        v-model="isChecked"
+        :id="`todo-checkbox-${todo.id}`"
         type="checkbox"
+        :checked="todo.completed"
         class="todo-checkbox no-user-select"
         @change="onTodoToggle"
       >
       <div style="padding: 2px 10px;">
         <label
-          :for="`todo-checkbox-${todoIndex}`"
-          :style="isChecked ? 'text-decoration: line-through' : ''"
+          :for="`todo-checkbox-${todo.id}`"
+          :style="todo.completed ? 'text-decoration: line-through' : ''"
         >
           {{ todo.title }}
         </label>
@@ -38,15 +38,6 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    todoIndex: {
-      type: Number,
-      default: 0,
-    },
-  },
-  data() {
-    return {
-      isChecked: this.todo.completed,
-    };
   },
   computed: {
     todoActions() {
@@ -72,9 +63,10 @@ export default {
   },
   methods: {
     onTodoToggle() {
+      console.log(this.todo.completed);
       this.$emit('switch-check', {
         id: this.todo.id,
-        completed: this.isChecked,
+        completed: this.todo.completed,
       });
     },
   },
