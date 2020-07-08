@@ -69,11 +69,11 @@ export default {
     },
 
     // trigger on manual changes and state update after undo operation (for disable redo)
-    clearUnusedInstances() {
+    replaceUnusedInstances(newInstance) {
       const index = this.editorController.editIndex;
       if (this.editorController.maxEditIndex >= index) {
         const len = this.editorController.editStates.length;
-        this.editorController.editStates.splice(index + 1, len);
+        this.editorController.editStates.splice(index + 1, len + 1, newInstance);
       }
     },
 
@@ -88,23 +88,26 @@ export default {
     },
 
     // save new edit note instance from data() by link in constructor
-    addNewInstance() {
-      this.clearUnusedInstances();
+    addNewInstance(instance) {
+      let tasks = [...this.editNoteInstance.tasks];
+      if (instance?.newTask) {
+        const existingTasks = this.currentEditState.tasks;
+        tasks = [instance.newTask, ...existingTasks];
+      }
+      // break object link system
+      const objInstance = {
+        ...this.editNoteInstance,
+        toJSON() {
+          return {
+            id: this.id,
+            title: this.title,
+            tasks,
+          };
+        },
+      };
+      // this.editorController.editStates.push();
+      this.replaceUnusedInstances(JSON.stringify(objInstance));
       this.$nextTick(() => {
-        // break object link system
-        const objInstance = {
-          ...this.editNoteInstance,
-          toJSON() {
-            return {
-              id: this.id,
-              title: this.title,
-              tasks: this.tasks,
-            };
-          },
-        };
-        // finally create unique object without link
-        const newObj = Object.create(objInstance);
-        this.editorController.editStates.push(JSON.stringify(newObj));
         this.editorController.editIndex += 1;
         this.editorController.maxEditIndex = this.editorController.editIndex;
       });
@@ -121,8 +124,8 @@ export default {
       // check if given id
       const taskId = this.editTodoTask.id;
 
-      // create unique object for break link
-      const taskObjectInstance = {
+      // create unique object instance for break link
+      const task = {
         ...this.editTodoTask,
         toJSON() {
           return {
@@ -131,19 +134,20 @@ export default {
           };
         },
       };
-      const task = Object.create(taskObjectInstance);
 
+      let newTask;
       if (taskId) {
         // update one task todo
         const index = this.editNoteInstance.tasks.findIndex((t) => t.id === taskId);
         this.editNoteInstance.tasks[index].title = task.inputHandler;
       } else {
-        // else create new and push to temporary store
-        this.editNoteInstance.tasks.unshift({
+        newTask = {
           id: v4(),
           title: task.inputHandler,
           completed: false,
-        });
+        };
+        // else create new and push to temporary store
+        this.editNoteInstance.tasks.unshift(newTask);
       }
 
       // clear form data and close dialog
@@ -152,7 +156,7 @@ export default {
         inputHandler: '',
         activeDialog: false,
       };
-      this.addNewInstance();
+      this.addNewInstance({ newTask });
     },
 
     todoSwitchCheck({ id, completed }) {
@@ -174,7 +178,7 @@ export default {
 
     // save note with all changes to global store
     saveNoteProxy() {
-      const data = this.editNoteInstance;
+      const data = this.currentEditState;
       if (data.title) {
         if (this.availableExistingNote) this.updateExistingNote(data);
         else this.storeNewNote(data);

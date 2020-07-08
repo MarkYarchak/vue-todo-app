@@ -33,7 +33,7 @@ export default new Vuex.Store({
       state.newlyCreatedNote.id = id;
     },
     updateOneNote(state, note: Note) {
-      const noteIndex = state.notesList.findIndex((n) => n.id === note.id);
+      const noteIndex = state.notesList.findIndex((n: Note) => n.id === note.id);
       // @ts-ignore
       state.notesList[noteIndex] = note;
     },
@@ -48,7 +48,7 @@ export default new Vuex.Store({
         state.newlyCreatedNote = { id: '', title: '', tasks: [] };
       } else {
         // delete existing note from list
-        state.notesList = state.notesList.filter((n) => n.id !== id);
+        state.notesList = state.notesList.filter((n: Note) => n.id !== id);
       }
     },
   },

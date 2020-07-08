@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { Note } from '@/models/note';
 import VueRouter, { RouteConfig } from 'vue-router';
 import store from '../store';
 import MainPage from '../pages/MainPage.vue';
@@ -10,7 +11,7 @@ function checkValidEditNoteRoute(queryId: string) {
   // find note in store else - invalid route
   // search in existing notes list and in newly created note
   return (
-    store.state.notesList.find((note) => note.id === queryId)
+    store.state.notesList.find((note: Note) => note.id === queryId)
     || store.state.newlyCreatedNote.id === queryId
   );
 }
